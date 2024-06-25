@@ -13,39 +13,29 @@ use Doctrine\ORM\Mapping as ORM;
 class Order
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $total = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createat = null;
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updateat = null;
+    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column]
     private ?int $status = null;
 
-    /**
-     * @var Collection<int, OrderDetail>
-     */
-    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'orderid')]
-    private Collection $productid;
-
-    /**
-     * @var Collection<int, OrderDetail>
-     */
-    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'orderid')]
+    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $orderDetails;
 
     public const STATUS_NEW = 0;
 
     public function __construct()
     {
-        $this->productid = new ArrayCollection();
         $this->orderDetails = new ArrayCollection();
     }
 
@@ -66,26 +56,26 @@ class Order
         return $this;
     }
 
-    public function getCreateat(): ?\DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->createat;
+        return $this->createdAt;
     }
 
-    public function setCreateat(\DateTimeInterface $createat): static
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
-        $this->createat = $createat;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdateat(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->updateat;
+        return $this->updatedAt;
     }
 
-    public function setUpdateat(\DateTimeInterface $updateat): static
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
     {
-        $this->updateat = $updateat;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -105,36 +95,6 @@ class Order
     /**
      * @return Collection<int, OrderDetail>
      */
-    public function getProductid(): Collection
-    {
-        return $this->productid;
-    }
-
-    public function addProductid(OrderDetail $productid): static
-    {
-        if (!$this->productid->contains($productid)) {
-            $this->productid->add($productid);
-            $productid->setOrderid($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProductid(OrderDetail $productid): static
-    {
-        if ($this->productid->removeElement($productid)) {
-            // set the owning side to null (unless already changed)
-            if ($productid->getOrderid() === $this) {
-                $productid->setOrderid(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, OrderDetail>
-     */
     public function getOrderDetails(): Collection
     {
         return $this->orderDetails;
@@ -144,7 +104,7 @@ class Order
     {
         if (!$this->orderDetails->contains($orderDetail)) {
             $this->orderDetails->add($orderDetail);
-            $orderDetail->setOrderid($this);
+            $orderDetail->setOrder($this);
         }
 
         return $this;
@@ -154,8 +114,8 @@ class Order
     {
         if ($this->orderDetails->removeElement($orderDetail)) {
             // set the owning side to null (unless already changed)
-            if ($orderDetail->getOrderid() === $this) {
-                $orderDetail->setOrderid(null);
+            if ($orderDetail->getOrder() === $this) {
+                $orderDetail->setOrder(null);
             }
         }
 

@@ -10,20 +10,22 @@ use Doctrine\ORM\Mapping as ORM;
 class OrderDetail
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orderDetails')]
-    private ?Order $orderid = null;
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderDetails')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Order $order = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Product $productid = null;
+    #[ORM\ManyToOne(targetEntity: Product::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $price = null;
 
     public function getId(): ?int
@@ -31,26 +33,26 @@ class OrderDetail
         return $this->id;
     }
 
-    public function getOrderid(): ?Order
+    public function getOrder(): ?Order
     {
-        return $this->orderid;
+        return $this->order;
     }
 
-    public function setOrderid(?Order $orderid): static
+    public function setOrder(?Order $order): static
     {
-        $this->orderid = $orderid;
+        $this->order = $order;
 
         return $this;
     }
 
-    public function getProductid(): ?Product
+    public function getProduct(): ?Product
     {
-        return $this->productid;
+        return $this->product;
     }
 
-    public function setProductid(?Product $productid): static
+    public function setProduct(?Product $product): static
     {
-        $this->productid = $productid;
+        $this->product = $product;
 
         return $this;
     }
